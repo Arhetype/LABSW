@@ -134,15 +134,14 @@ router.post('/logout', async (req, res) => {
 
     try {
         // Проверяем, что токен валиден
-        const decoded = verifyToken(token); // Используем verifyToken
+        const decoded = verifyToken(token);
         if (!decoded) {
             return res.status(401).json({ error: 'Неверный токен' });
         }
 
-        // Добавляем токен в черный список
         await BlacklistedToken.create({
             token,
-            expiresAt: new Date(decoded.exp * 1000), // Время истечения токена
+            expiresAt: new Date(decoded.exp * 1000),
         });
 
         res.status(200).json({ message: 'Успешный выход из системы' });

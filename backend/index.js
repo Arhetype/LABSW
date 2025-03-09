@@ -7,7 +7,7 @@ import { syncModel as syncUserModel } from './models/User.js';
 import { syncModel as syncEventModel } from './models/Event.js';
 import { syncModel as syncBlacklistedTokenModel } from './models/BlacklistedToken.js';
 import routes from './routes/index.js';
-import setupSwagger from './swagger.js';
+import setupSwagger from './docs/swagger.js';
 import morgan from 'morgan';
 import './config/passport.js';
 
