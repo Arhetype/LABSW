@@ -5,6 +5,7 @@ import passport from 'passport';
 import { sequelize } from './config/db.js';
 import { syncModel as syncUserModel } from './models/User.js';
 import { syncModel as syncEventModel } from './models/Event.js';
+import { syncModel as syncBlacklistedTokenModel } from './models/BlacklistedToken.js';
 import routes from './routes/index.js';
 import setupSwagger from './swagger.js';
 import morgan from 'morgan';
@@ -35,6 +36,7 @@ sequelize.authenticate()
 const syncModels = async () => {
     await syncUserModel();
     await syncEventModel();
+    await syncBlacklistedTokenModel();
 };
 
 syncModels().then(() => {

@@ -1,6 +1,7 @@
 import express from 'express';
 import { User } from '../models/User.js';
-import { generateToken } from '../utils/jwt.js';
+import { BlacklistedToken } from '../models/BlacklistedToken.js';
+import { generateToken, verifyToken } from '../utils/jwt.js';
 
 const router = express.Router();
 
@@ -106,6 +107,47 @@ router.post('/login', async (req, res) => {
         res.json({ token });
     } catch (error) {
         console.error('Ошибка при входе:', error);
+        res.status(500).json({ error: 'Ошибка сервера' });
+    }
+});
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Выход из системы
+ *     tags: [Auth]
+ *     security:
+ *       - bearerAuth: []
+ *     responses:
+ *       200:
+ *         description: Успешный выход из системы
+ *       401:
+ *         description: Неверный токен
+ */
+router.post('/logout', async (req, res) => {
+    const token = req.headers.authorization?.split(' ')[1]; // Получаем токен из заголовка
+
+    if (!token) {
+        return res.status(401).json({ error: 'Токен отсутствует' });
+    }
+
+    try {
+        // Проверяем, что токен валиден
+        const decoded = verifyToken(token); // Используем verifyToken
+        if (!decoded) {
+            return res.status(401).json({ error: 'Неверный токен' });
+        }
+
+        // Добавляем токен в черный список
+        await BlacklistedToken.create({
+            token,
+            expiresAt: new Date(decoded.exp * 1000), // Время истечения токена
+        });
+
+        res.status(200).json({ message: 'Успешный выход из системы' });
+    } catch (error) {
+        console.error('Ошибка при выходе из системы:', error);
         res.status(500).json({ error: 'Ошибка сервера' });
     }
 });
