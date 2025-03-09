@@ -1,7 +1,8 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/db.js';
+import bcrypt from 'bcrypt';
 
-const User = sequelize.define('User', {
+export const User = sequelize.define('User', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -17,34 +18,58 @@ const User = sequelize.define('User', {
         unique: true,
         validate: {
             isEmail: {
-                msg: 'Некорректный формат email'
+                msg: 'Некорректный формат email',
             },
             notEmpty: {
-                msg: 'Email не может быть пустым'
-            }
-        }
+                msg: 'Email не может быть пустым',
+            },
+        },
+    },
+    password: {
+        type: DataTypes.STRING,
+        allowNull: false,
+        validate: {
+            notEmpty: {
+                msg: 'Пароль не может быть пустым',
+            },
+            len: {
+                args: [6, 255],
+                msg: 'Пароль должен содержать от 6 до 255 символов',
+            },
+        },
     },
     createdAt: {
         type: DataTypes.DATE,
-        defaultValue: Sequelize.NOW,
+        defaultValue: DataTypes.NOW,
     },
 }, {
     tableName: 'users',
     timestamps: false,
+    hooks: {
+        beforeCreate: async (user) => {
+            if (user.password) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
+        },
+        beforeUpdate: async (user) => {
+            if (user.changed('password')) {
+                const salt = await bcrypt.genSalt(10);
+                user.password = await bcrypt.hash(user.password, salt);
+            }
+        },
+    },
 });
 
-// Синхронизация модели с базой данных
-const syncModel = async () => {
+User.prototype.comparePassword = async function (candidatePassword) {
+    return await bcrypt.compare(candidatePassword, this.password);
+};
+
+export const syncModel = async () => {
     try {
-        await User.sync(); // Создает таблицу, если она не существует
+        await User.sync();
         console.log('Модель "Пользователь" синхронизирована с базой данных.');
     } catch (error) {
         console.error('Ошибка при синхронизации модели "Пользователь":', error);
     }
 };
-
-module.exports = {
-    User,
-    syncModel,
-};
-

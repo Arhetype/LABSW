@@ -1,12 +1,14 @@
-const express = require('express');
-const dotenv = require('dotenv');
-const cors = require('cors');
-const { sequelize } = require('./config/db');
-const { syncModel: syncUserModel } = require('./models/User');
-const { syncModel: syncEventModel } = require('./models/Event');
-const eventRoutes = require('./routes/events');
-const userRoutes = require('./routes/users');
-const setupSwagger = require('./swagger');
+import express from 'express';
+import dotenv from 'dotenv';
+import cors from 'cors';
+import passport from 'passport';
+import { sequelize } from './config/db.js';
+import { syncModel as syncUserModel } from './models/User.js';
+import { syncModel as syncEventModel } from './models/Event.js';
+import routes from './routes/index.js';
+import setupSwagger from './swagger.js';
+import morgan from 'morgan';
+import './config/passport.js';
 
 dotenv.config();
 
@@ -14,13 +16,11 @@ const app = express();
 
 app.use(express.json());
 app.use(cors());
-
+app.use(passport.initialize());
 
 const PORT = process.env.PORT || 3000;
 
 setupSwagger(app);
-
-const morgan = require('morgan');
 
 app.use(morgan('[:method] :url :status - :response-time ms'));
 
@@ -43,8 +43,7 @@ syncModels().then(() => {
     console.error('Ошибка при синхронизации моделей:', err);
 });
 
-app.use('/events', eventRoutes);
-app.use('/users', userRoutes);
+app.use('/', routes);
 
 app.get('/', (req, res) => {
     res.json({ message: 'Сервер работает!' });
@@ -57,4 +56,3 @@ app.listen(PORT, (err) => {
         console.log(`Сервер запущен на порту ${PORT}`);
     }
 });
-

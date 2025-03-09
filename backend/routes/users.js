@@ -1,5 +1,6 @@
-const express = require('express');
-const { User } = require('../models/User'); // Импортируем модель User
+import express from 'express';
+import { User } from '../models/User.js';
+
 const router = express.Router();
 
 /**
@@ -81,35 +82,4 @@ router.get('/', async (req, res) => {
     }
 });
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     User:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *         name:
- *           type: string
- *         email:
- *           type: string
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- *     UserInput:
- *       type: object
- *       required:
- *         - name
- *         - email
- *       properties:
- *         name:
- *           type: string
- *         email:
- *           type: string
- */
-
-module.exports = router;
+export default router;

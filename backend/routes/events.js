@@ -1,7 +1,8 @@
-const express = require('express');
-const { Event } = require('../models/Event');
+import express from 'express';
+import { Event } from '../models/Event.js';
+import { checkEventLimit } from '../middlewares/eventLimit.js';
+
 const router = express.Router();
-const checkEventLimit = require('../middlewares/eventLimit');
 
 /**
  * @swagger
@@ -9,6 +10,38 @@ const checkEventLimit = require('../middlewares/eventLimit');
  *   name: Events
  *   description: Управление мероприятиями
  */
+
+/**
+ * @swagger
+ * /events:
+ *   get:
+ *     summary: Получить все мероприятия
+ *     tags: [Events]
+ *     responses:
+ *       200:
+ *         description: Список мероприятий
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Event'
+ */
+router.get('/', async (req, res) => {
+    const { category } = req.query;
+    try {
+        let events;
+        if (category) {
+            events = await Event.findAll({ where: { category } });
+        } else {
+            events = await Event.findAll();
+        }
+        res.status(200).json(events);
+    } catch (error) {
+        console.error('Ошибка при получении мероприятий:', error);
+        res.status(500).json({ error: 'Ошибка при получении мероприятий' });
+    }
+});
 
 /**
  * @swagger
@@ -45,12 +78,9 @@ router.post('/', checkEventLimit, async (req, res) => {
             });
         }
         console.error('Ошибка при создании мероприятия:', error);
-        res.status(500).json({ error: 'Ошибка при создании мероприятия' });
+        res.status(500).json({ error: 'Ошибка при создании мероприятия (пользователя не существует)' });
     }
 });
-
-
-module.exports = router;
 
 /**
  * @swagger
@@ -75,20 +105,6 @@ module.exports = router;
  *       404:
  *         description: Мероприятие не найдено
  */
-router.get('/', async (req, res) => {
-    const { id } = req.params;
-    try {
-        const event = await Event.findByPk(id);
-        if (!event) {
-            return res.status(404).json({ error: 'Мероприятие не найдено' });
-        }
-        res.status(200).json(event);
-    } catch (error) {
-        console.error('Ошибка при получении мероприятия:', error);
-        res.status(500).json({ error: 'Ошибка при получении мероприятия' });
-    }
-});
-
 router.get('/:id', async (req, res) => {
     const { id } = req.params;
     try {
@@ -179,61 +195,11 @@ router.delete('/:id', async (req, res) => {
         }
 
         await event.destroy();
-        res.status(204).send(); // Успешное удаление, без содержимого
+        res.status(204).send();
     } catch (error) {
         console.error('Ошибка при удалении мероприятия:', error);
         res.status(500).json({ error: 'Ошибка при удалении мероприятия' });
     }
 });
 
-/**
- * @swagger
- * components:
- *   schemas:
- *     Event:
- *       type: object
- *       properties:
- *         id:
- *           type: integer
- *         title:
- *           type: string
- *         description:
- *           type: string
- *         date:
- *           type: string
- *           format: date-time
- *         category:
- *           type: string
- *           enum: [концерт, лекция, выставка]
- *         createdBy:
- *           type: integer
- *         createdAt:
- *           type: string
- *           format: date-time
- *         updatedAt:
- *           type: string
- *           format: date-time
- *     EventInput:
- *       type: object
- *       required:
- *         - title
- *         - date
- *         - createdBy
-
- *         - category
- *       properties:
- *         title:
- *           type: string
- *         description:
- *           type: string
- *         date:
- *           type: string
- *           format: date-time
- *         createdBy:
- *           type: integer
- *         category:
- *           type: string
- *           enum: [концерт, лекция, выставка]
- */
-
-module.exports = router;
+export default router;

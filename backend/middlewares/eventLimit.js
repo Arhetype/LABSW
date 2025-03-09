@@ -1,12 +1,12 @@
-const { Event } = require('../models/Event');
-const dotenv = require('dotenv');
-const {Op} = require("sequelize");
+import { Event } from '../models/Event.js';
+import dotenv from 'dotenv';
+import { Op } from 'sequelize';
 
 dotenv.config();
 
 const DAILY_EVENT_LIMIT = parseInt(process.env.DAILY_EVENT_LIMIT, 10) || 5;
 
-const checkEventLimit = async (req, res, next) => {
+export const checkEventLimit = async (req, res, next) => {
     const { createdBy } = req.body;
 
     try {
@@ -22,8 +22,8 @@ const checkEventLimit = async (req, res, next) => {
 
         if (eventsCount >= DAILY_EVENT_LIMIT) {
             return res.status(429).json({
-                error: `Превышен лимит создания мероприятий. Лимит: ${DAILY_EVENT_LIMIT} в день.`,
-            });
+                error: "Превышен лимит создания мероприятий. Лимит: ${DAILY_EVENT_LIMIT} в день.",
+        });
         }
 
         next();
@@ -32,5 +32,3 @@ const checkEventLimit = async (req, res, next) => {
         res.status(500).json({ error: 'Ошибка при проверке лимита мероприятий' });
     }
 };
-
-module.exports = checkEventLimit;
