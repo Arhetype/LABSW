@@ -1,8 +1,8 @@
-const { Sequelize, DataTypes } = require('sequelize');
-const { sequelize } = require('../config/db');
-const { User } = require('./User');
+import { DataTypes } from 'sequelize';
+import { sequelize } from '../config/db.js';
+import { User } from './User.js';
 
-const Event = sequelize.define('Event', {
+export const Event = sequelize.define('Event', {
     id: {
         type: DataTypes.INTEGER,
         autoIncrement: true,
@@ -65,17 +65,11 @@ const Event = sequelize.define('Event', {
 User.hasMany(Event, { foreignKey: 'createdBy' });
 Event.belongsTo(User, { foreignKey: 'createdBy' });
 
-// Синхронизация модели с базой данных
-const syncModel = async () => {
+export const syncModel = async () => {
     try {
-        await Event.sync({ alter: true }); // Используем alter для безопасного обновления структуры
+        await Event.sync({ alter: true });
         console.log('Модель "Мероприятие" синхронизирована с базой данных.');
     } catch (error) {
         console.error('Ошибка при синхронизации модели "Мероприятие":', error);
     }
-};
-
-module.exports = {
-    Event,
-    syncModel,
 };

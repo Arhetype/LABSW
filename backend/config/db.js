@@ -1,5 +1,5 @@
-const { Sequelize } = require('sequelize');
-const dotenv = require('dotenv');
+import { Sequelize } from 'sequelize';
+import dotenv from 'dotenv';
 
 dotenv.config();
 
@@ -9,7 +9,7 @@ const sequelize = new Sequelize(process.env.DB_NAME, process.env.DB_USER, proces
     dialect: 'postgres',
 });
 
-const authenticateDatabase = async () => {
+export const authenticateDatabase = async () => {
     try {
         await sequelize.authenticate();
         console.log('Соединение с базой данных успешно установлено.');
@@ -18,7 +18,4 @@ const authenticateDatabase = async () => {
     }
 };
 
-module.exports = {
-    sequelize,
-    authenticateDatabase,
-};
+export { sequelize };
