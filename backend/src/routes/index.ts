@@ -1,6 +1,6 @@
 import express from 'express';
 import passport from 'passport';
-import { checkBlacklistedToken } from '../middlewares/checkBlacklistedToken';
+import { checkBlacklistedToken } from '@middlewares/checkBlacklistedToken';
 import eventRoutes from './events';
 import userRoutes from './users';
 import authRoutes from './auth';

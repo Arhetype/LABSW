@@ -8,6 +8,13 @@
     "target": "es2021",
     "outDir": "./dist",
     "baseUrl": "./src",
+    "paths": {
+      "@models/*": ["models/*"],
+      "@routes/*": ["routes/*"],
+      "@middlewares/*": ["middlewares/*"],
+      "@utils/*": ["utils/*"],
+      "@config/*": ["config/*"]
+    },
     "experimentalDecorators": true,
     "esModuleInterop": true,
     "strict": true

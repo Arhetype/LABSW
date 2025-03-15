@@ -2,7 +2,7 @@ import express from 'express';
 import dotenv from 'dotenv';
 import cors from 'cors';
 import passport from 'passport';
-import { sequelize } from './config/db';
+import { sequelize } from '@config/db';
 import { syncModel as syncUserModel } from './models/User';
 import { syncModel as syncEventModel } from './models/Event';
 import { syncModel as syncBlacklistedTokenModel } from './models/BlacklistedToken';

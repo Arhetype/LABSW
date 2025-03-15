@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Event } from '../models/Event';
+import { Event } from '@models/Event';
 import dotenv from 'dotenv';
 import { Op } from 'sequelize';
 

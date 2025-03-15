@@ -1,7 +1,7 @@
 import express, { Request, Response } from 'express';
-import { User } from '../models/User';
-import { BlacklistedToken } from '../models/BlacklistedToken';
-import { generateToken, verifyToken } from '../utils/jwt';
+import { User } from '@models/User';
+import { BlacklistedToken } from '@models/BlacklistedToken';
+import { generateToken, verifyToken } from '@utils/jwt';
 
 const router = express.Router();
 

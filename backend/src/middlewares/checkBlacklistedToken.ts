@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { BlacklistedToken } from '../models/BlacklistedToken';
+import { BlacklistedToken } from '@models/BlacklistedToken';
 
 export const checkBlacklistedToken = async (
   req: Request,
