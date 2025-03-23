@@ -1,4 +1,9 @@
 #!/bin/sh
 . "$(dirname "$0")/_/husky.sh"
 
-cd backend && npm run lint && npm run format
+# Переход в папку backend
+cd backend || exit 1
+
+# Запуск ESLint и Prettier
+npm run lint
+npm run format
