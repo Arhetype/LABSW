@@ -25,9 +25,9 @@ const PORT = process.env.PORT || 3000;
 
 setupSwagger(app);
 
-
-
 app.use(morgan('[:method] :url :status - :response-time ms'));
+
+
 
 sequelize
   .authenticate()
