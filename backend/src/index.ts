@@ -27,8 +27,6 @@ setupSwagger(app);
 
 app.use(morgan('[:method] :url :status - :response-time ms'));
 
-
-
 sequelize
   .authenticate()
   .then(() => {
