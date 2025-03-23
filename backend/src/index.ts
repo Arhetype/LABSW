@@ -15,8 +15,6 @@ dotenv.config();
 
 const app = express();
 
-const unusedVariable = 'Эта переменная не используется';
-
 app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
@@ -41,7 +39,6 @@ const syncModels = async (): Promise<void> => {
   await syncEventModel();
   await syncBlacklistedTokenModel();
 };
-
 syncModels()
   .then(() => {
     console.log('Все модели синхронизированы с базой данных.');
