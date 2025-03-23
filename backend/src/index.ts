@@ -13,10 +13,11 @@ import './config/passport';
 
 dotenv.config();
 
-
 const app = express();
 
 const unusedVariable = 'Эта переменная не используется';
+
+
 
 app.use(express.json());
 app.use(cors());
