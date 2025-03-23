@@ -15,6 +15,8 @@ dotenv.config();
 
 const app = express();
 
+const unusedVariable = 'Эта переменная не используется';
+
 app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
@@ -61,8 +63,3 @@ app.listen(PORT, (err?: Error) => {
     console.log(`Сервер запущен на порту ${PORT}`);
   }
 });
-
-// Добавьте лишние пробелы и неправильные отступы
-const  testFunction = (  ) => {
-  console.log(  'Этот код содержит лишние пробелы и неправильные отступы'  )
-}

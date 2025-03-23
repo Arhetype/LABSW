@@ -3,7 +3,7 @@ import pluginJs from '@eslint/js';
 import tseslint from 'typescript-eslint';
 import pluginPrettier from 'eslint-plugin-prettier';
 import prettierConfig from 'eslint-config-prettier';
-import eslintPluginImport from 'eslint-plugin-import';;
+import eslintPluginImport from 'eslint-plugin-import';
 
 /** @type {import('eslint').Linter.Config} */
 export default [
