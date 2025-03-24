@@ -15,8 +15,6 @@ dotenv.config();
 
 const app = express();
 
-//const unusedVariable = 'This variable is not used';
-
 app.use(express.json());
 app.use(cors());
 app.use(passport.initialize());
