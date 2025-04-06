@@ -17,13 +17,11 @@ const CreateEvent: React.FC = () => {
   });
 
   useEffect(() => {
-    // Проверяем, авторизован ли пользователь
     if (!authService.isAuthenticated()) {
       navigate('/login');
       return;
     }
 
-    // Получаем ID пользователя из токена
     const token = localStorage.getItem('token');
     if (token) {
       try {
@@ -36,11 +34,13 @@ const CreateEvent: React.FC = () => {
     }
   }, [navigate]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -57,13 +57,23 @@ const CreateEvent: React.FC = () => {
       await eventService.createEvent({
         ...formData,
         date: new Date(formData.date).toISOString(),
-        createdBy: userId
+        createdBy: userId,
       });
       navigate('/');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Ошибка при создании события:', err);
-      if (err.response?.data?.error) {
-        setError(err.response.data.error);
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
+        err.response.data &&
+        typeof err.response.data === 'object' &&
+        'error' in err.response.data
+      ) {
+        setError(err.response.data.error as string);
       } else {
         setError('Не удалось создать событие. Пожалуйста, попробуйте снова.');
       }
@@ -138,4 +148,4 @@ const CreateEvent: React.FC = () => {
   );
 };
 
-export default CreateEvent; 
+export default CreateEvent;

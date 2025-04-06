@@ -9,23 +9,21 @@ export const axiosInstance = axios.create({
   },
 });
 
-// Add request interceptor for authentication
 axiosInstance.interceptors.request.use(
-  (config) => {
+  config => {
     const token = localStorage.getItem('token');
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
     return config;
   },
-  (error) => {
+  error => {
     return Promise.reject(error);
   }
 );
 
-// Add response interceptor for error handling
 axiosInstance.interceptors.response.use(
-  (response) => response,
+  response => response,
   (error: AxiosError) => {
     if (error.response?.status === 401) {
       localStorage.removeItem('token');
@@ -33,4 +31,4 @@ axiosInstance.interceptors.response.use(
     }
     return Promise.reject(error);
   }
-); 
+);

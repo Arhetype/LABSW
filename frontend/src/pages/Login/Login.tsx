@@ -4,6 +4,10 @@ import { authService } from '../../api/authService';
 import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
 import styles from './Login.module.scss';
 
+interface LocationState {
+  message?: string;
+}
+
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
@@ -15,15 +19,15 @@ const Login: React.FC = () => {
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   useEffect(() => {
-    // Проверяем, есть ли сообщение об успешной регистрации
-    if (location.state && (location.state as any).message) {
-      setSuccessMessage((location.state as any).message);
+    const state = location.state as LocationState;
+    if (state && state.message) {
+      setSuccessMessage(state.message);
     }
   }, [location]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
@@ -37,7 +41,7 @@ const Login: React.FC = () => {
       const response = await authService.login(formData);
       localStorage.setItem('token', response.token);
       navigate('/');
-    } catch (err) {
+    } catch {
       setError('Неверный email или пароль. Пожалуйста, попробуйте снова.');
     }
   };
@@ -47,11 +51,7 @@ const Login: React.FC = () => {
       <div className={styles.formWrapper}>
         <h1>Вход в систему</h1>
         {error && <ErrorMessage message={error} onClose={() => setError(null)} />}
-        {successMessage && (
-          <div className={styles.successMessage}>
-            {successMessage}
-          </div>
-        )}
+        {successMessage && <div className={styles.successMessage}>{successMessage}</div>}
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="email">Email</label>
@@ -78,7 +78,11 @@ const Login: React.FC = () => {
           </div>
 
           <div className={styles.buttons}>
-            <button type="button" onClick={() => navigate('/register')} className={styles.registerButton}>
+            <button
+              type="button"
+              onClick={() => navigate('/register')}
+              className={styles.registerButton}
+            >
               Нет аккаунта? Зарегистрироваться
             </button>
             <button type="submit" className={styles.loginButton}>
@@ -91,4 +95,4 @@ const Login: React.FC = () => {
   );
 };
 
-export default Login; 
+export default Login;

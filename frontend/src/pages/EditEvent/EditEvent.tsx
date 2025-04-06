@@ -18,13 +18,11 @@ const EditEvent: React.FC = () => {
   });
 
   useEffect(() => {
-    // Проверяем, авторизован ли пользователь
     if (!authService.isAuthenticated()) {
       navigate('/login');
       return;
     }
 
-    // Загружаем данные события
     const fetchEvent = async () => {
       if (!id) {
         setError('ID события не указан');
@@ -34,21 +32,30 @@ const EditEvent: React.FC = () => {
 
       try {
         const event = await eventService.getEventById(parseInt(id, 10));
-        
-        // Форматируем дату для input datetime-local
+
         const eventDate = new Date(event.date);
         const formattedDate = eventDate.toISOString().slice(0, 16);
-        
+
         setFormData({
           title: event.title,
           description: event.description || '',
           date: formattedDate,
           category: event.category,
         });
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Ошибка при загрузке события:', err);
-        if (err.response?.data?.error) {
-          setError(err.response.data.error);
+        if (
+          err &&
+          typeof err === 'object' &&
+          'response' in err &&
+          err.response &&
+          typeof err.response === 'object' &&
+          'data' in err.response &&
+          err.response.data &&
+          typeof err.response.data === 'object' &&
+          'error' in err.response.data
+        ) {
+          setError(err.response.data.error as string);
         } else {
           setError('Не удалось загрузить событие. Пожалуйста, попробуйте снова.');
         }
@@ -60,11 +67,13 @@ const EditEvent: React.FC = () => {
     fetchEvent();
   }, [id, navigate]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
   };
 
@@ -80,13 +89,23 @@ const EditEvent: React.FC = () => {
     try {
       await eventService.updateEvent(parseInt(id, 10), {
         ...formData,
-        date: new Date(formData.date).toISOString()
+        date: new Date(formData.date).toISOString(),
       });
       navigate('/');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Ошибка при обновлении события:', err);
-      if (err.response?.data?.error) {
-        setError(err.response.data.error);
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
+        err.response.data &&
+        typeof err.response.data === 'object' &&
+        'error' in err.response.data
+      ) {
+        setError(err.response.data.error as string);
       } else {
         setError('Не удалось обновить событие. Пожалуйста, попробуйте снова.');
       }
@@ -165,4 +184,4 @@ const EditEvent: React.FC = () => {
   );
 };
 
-export default EditEvent; 
+export default EditEvent;

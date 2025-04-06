@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { eventService, Event } from '../../api/eventService';
 import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
-import { authService } from '../../api/authService';
 import styles from './EventDetails.module.scss';
 
 const EventDetails: React.FC = () => {
@@ -24,8 +23,7 @@ const EventDetails: React.FC = () => {
       try {
         const eventData = await eventService.getEventById(parseInt(id, 10));
         setEvent(eventData);
-        
-        // Проверяем, является ли текущий пользователь владельцем события
+
         const token = localStorage.getItem('token');
         if (token) {
           try {
@@ -35,10 +33,20 @@ const EventDetails: React.FC = () => {
             console.error('Ошибка при декодировании токена:', err);
           }
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Ошибка при загрузке события:', err);
-        if (err.response?.data?.error) {
-          setError(err.response.data.error);
+        if (
+          err &&
+          typeof err === 'object' &&
+          'response' in err &&
+          err.response &&
+          typeof err.response === 'object' &&
+          'data' in err.response &&
+          err.response.data &&
+          typeof err.response.data === 'object' &&
+          'error' in err.response.data
+        ) {
+          setError(err.response.data.error as string);
         } else {
           setError('Не удалось загрузить событие. Пожалуйста, попробуйте снова.');
         }
@@ -52,7 +60,7 @@ const EventDetails: React.FC = () => {
 
   const handleDelete = async () => {
     if (!id) return;
-    
+
     if (!window.confirm('Вы уверены, что хотите удалить это событие?')) {
       return;
     }
@@ -60,10 +68,20 @@ const EventDetails: React.FC = () => {
     try {
       await eventService.deleteEvent(parseInt(id, 10));
       navigate('/');
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Ошибка при удалении события:', err);
-      if (err.response?.data?.error) {
-        setError(err.response.data.error);
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
+        err.response.data &&
+        typeof err.response.data === 'object' &&
+        'error' in err.response.data
+      ) {
+        setError(err.response.data.error as string);
       } else {
         setError('Не удалось удалить событие. Пожалуйста, попробуйте снова.');
       }
@@ -77,7 +95,7 @@ const EventDetails: React.FC = () => {
       month: '2-digit',
       year: 'numeric',
       hour: '2-digit',
-      minute: '2-digit'
+      minute: '2-digit',
     });
   };
 
@@ -117,16 +135,10 @@ const EventDetails: React.FC = () => {
           </button>
           {isOwner && (
             <>
-              <button 
-                onClick={() => navigate(`/events/${id}/edit`)} 
-                className={styles.editButton}
-              >
+              <button onClick={() => navigate(`/events/${id}/edit`)} className={styles.editButton}>
                 Редактировать
               </button>
-              <button 
-                onClick={handleDelete} 
-                className={styles.deleteButton}
-              >
+              <button onClick={handleDelete} className={styles.deleteButton}>
                 Удалить
               </button>
             </>
@@ -157,4 +169,4 @@ const EventDetails: React.FC = () => {
   );
 };
 
-export default EventDetails; 
+export default EventDetails;

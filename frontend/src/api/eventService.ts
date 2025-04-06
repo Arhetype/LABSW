@@ -21,12 +21,12 @@ export interface CreateEventData {
   createdBy: number;
 }
 
-export interface UpdateEventData extends Partial<CreateEventData> {}
+export type UpdateEventData = Partial<CreateEventData>;
 
 export const eventService = {
   async getEvents(category?: EventCategory): Promise<Event[]> {
     const { data } = await axiosInstance.get<Event[]>('/events', {
-      params: { category }
+      params: { category },
     });
     return data;
   },
@@ -50,11 +50,10 @@ export const eventService = {
     await axiosInstance.delete(`/events/${id}`);
   },
 
-  // Публичный маршрут для получения событий без аутентификации
   async getPublicEvents(category?: EventCategory): Promise<Event[]> {
     const { data } = await axiosInstance.get<Event[]>('/public/events', {
-      params: { category }
+      params: { category },
     });
     return data;
-  }
-}; 
+  },
+};

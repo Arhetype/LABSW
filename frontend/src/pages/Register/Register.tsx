@@ -15,7 +15,7 @@ const Register: React.FC = () => {
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData((prev) => ({
+    setFormData(prev => ({
       ...prev,
       [name]: value,
     }));
@@ -27,9 +27,10 @@ const Register: React.FC = () => {
 
     try {
       await authService.register(formData);
-      // После успешной регистрации перенаправляем на страницу входа
-      navigate('/login', { state: { message: 'Регистрация успешна! Пожалуйста, войдите в систему.' } });
-    } catch (err) {
+      navigate('/login', {
+        state: { message: 'Регистрация успешна! Пожалуйста, войдите в систему.' },
+      });
+    } catch {
       setError('Ошибка регистрации. Пожалуйста, попробуйте снова.');
     }
   };
@@ -90,4 +91,4 @@ const Register: React.FC = () => {
   );
 };
 
-export default Register; 
+export default Register;
