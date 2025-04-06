@@ -45,7 +45,6 @@ router.post('/', async (req: Request, res: Response): Promise<void> => {
       name,
       email,
       password: '',
-      id: 0, // Убедитесь, что это поле не требуется, так как оно autoIncrement
     });
     res.status(201).json(newUser);
   } catch (error: unknown) {

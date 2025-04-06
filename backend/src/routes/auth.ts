@@ -50,7 +50,6 @@ router.post('/register', async (req: Request, res: Response): Promise<void> => {
       name,
       email,
       password,
-      id: 0, // Убедитесь, что это поле не требуется, так как оно autoIncrement
     });
     res
       .status(201)
@@ -159,7 +158,6 @@ router.post('/logout', async (req: Request, res: Response): Promise<void> => {
     await BlacklistedToken.create({
       token,
       expiresAt: new Date(decoded.exp * 1000),
-      id: 0, // Убедитесь, что это поле не требуется, так как оно autoIncrement
     });
 
     res.status(200).json({ message: 'Успешный выход из системы' });
