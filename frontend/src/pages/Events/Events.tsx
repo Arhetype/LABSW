@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { eventService, Event, EventCategory } from '../../api/eventService';
 import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
@@ -7,8 +7,8 @@ import styles from './Events.module.scss';
 const Events: React.FC = () => {
   const navigate = useNavigate();
   const [events, setEvents] = useState<Event[]>([]);
-  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState<EventCategory | null>(null);
 
   const fetchEvents = async (category?: EventCategory | null) => {
@@ -16,8 +16,24 @@ const Events: React.FC = () => {
       setLoading(true);
       const data = await eventService.getEvents(category || undefined);
       setEvents(data);
-    } catch (err) {
-      setError('Ошибка при загрузке событий. Пожалуйста, попробуйте снова.');
+      setError(null);
+    } catch (err: unknown) {
+      console.error('Ошибка при загрузке событий:', err);
+      if (
+        err &&
+        typeof err === 'object' &&
+        'response' in err &&
+        err.response &&
+        typeof err.response === 'object' &&
+        'data' in err.response &&
+        err.response.data &&
+        typeof err.response.data === 'object' &&
+        'error' in err.response.data
+      ) {
+        setError(err.response.data.error as string);
+      } else {
+        setError('Ошибка при загрузке событий. Пожалуйста, попробуйте снова.');
+      }
     } finally {
       setLoading(false);
     }
@@ -34,30 +50,43 @@ const Events: React.FC = () => {
   const getCategoryLabel = (category: EventCategory): string => {
     switch (category) {
       case 'концерт':
-        return 'Концерты';
+        return 'Концерт';
       case 'лекция':
-        return 'Лекции';
+        return 'Лекция';
       case 'выставка':
-        return 'Выставки';
+        return 'Выставка';
       default:
         return category;
     }
   };
 
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    return date.toLocaleString('ru-RU', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    });
+  };
+
+  if (loading) {
+    return <div className={styles.loading}>Загрузка событий...</div>;
+  }
+
   return (
     <div className={styles.eventsContainer}>
       <div className={styles.header}>
         <h1>События</h1>
-        <button onClick={() => navigate('/events/create')} className={styles.createButton}>
+        <button className={styles.createButton} onClick={() => navigate('/events/create')}>
           Создать событие
         </button>
       </div>
 
-      {error && <ErrorMessage message={error} onClose={() => setError(null)} />}
-
       <div className={styles.categoryFilter}>
         <button
-          className={`${styles.categoryButton} ${selectedCategory === null ? styles.active : ''}`}
+          className={`${styles.categoryButton} ${!selectedCategory ? styles.active : ''}`}
           onClick={() => handleCategoryChange(null)}
         >
           Все
@@ -82,24 +111,30 @@ const Events: React.FC = () => {
         </button>
       </div>
 
-      {loading ? (
-        <div className={styles.loading}>Загрузка событий...</div>
-      ) : events.length === 0 ? (
+      {error && <ErrorMessage message={error} onClose={() => setError(null)} />}
+
+      {events.length === 0 ? (
         <div className={styles.noEvents}>Нет доступных событий</div>
       ) : (
         <div className={styles.eventsGrid}>
-          {events.map((event) => (
+          {events.map(event => (
             <div
               key={event.id}
               className={styles.eventCard}
               onClick={() => navigate(`/events/${event.id}`)}
             >
               <h2>{event.title}</h2>
-              <p className={styles.description}>{event.description}</p>
               <div className={styles.eventDetails}>
-                <span>Дата: {new Date(event.date).toLocaleDateString()}</span>
-                <span>Категория: {getCategoryLabel(event.category)}</span>
+                <div className={styles.eventInfo}>
+                  <span className={styles.label}>Дата:</span>
+                  <span>{formatDate(event.date)}</span>
+                </div>
+                <div className={styles.eventInfo}>
+                  <span className={styles.label}>Категория:</span>
+                  <span className={styles.category}>{getCategoryLabel(event.category)}</span>
+                </div>
               </div>
+              {event.description && <p className={styles.description}>{event.description}</p>}
             </div>
           ))}
         </div>
@@ -108,4 +143,4 @@ const Events: React.FC = () => {
   );
 };
 
-export default Events; 
+export default Events;

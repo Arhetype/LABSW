@@ -1,3 +1,5 @@
+@use 'sass:color';
+
 .detailsContainer {
   max-width: 800px;
   margin: 0 auto;
@@ -21,13 +23,17 @@
   gap: 1rem;
 }
 
-.backButton, .editButton, .deleteButton {
+.backButton,
+.editButton,
+.deleteButton {
   padding: 0.75rem 1.5rem;
   border: none;
   border-radius: 4px;
   font-size: 1rem;
   cursor: pointer;
-  transition: background-color 0.3s, color 0.3s;
+  transition:
+    background-color 0.3s,
+    color 0.3s;
 }
 
 .backButton {
@@ -44,7 +50,7 @@
   color: white;
 
   &:hover {
-    background-color: #3a7bc8;
+    background-color: color.adjust(#4a90e2, $lightness: -10%);
   }
 }
 
@@ -53,7 +59,7 @@
   color: white;
 
   &:hover {
-    background-color: #c82333;
+    background-color: color.adjust(#dc3545, $lightness: -10%);
   }
 }
 
@@ -109,7 +115,8 @@
   color: #666;
 }
 
-.errorContainer, .notFound {
+.errorContainer,
+.notFound {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -120,4 +127,43 @@
     color: #333;
     margin: 0;
   }
-} 
+}
+
+@media (max-width: 768px) {
+  .detailsContainer {
+    padding: 1rem;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+  }
+
+  .actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .backButton,
+  .editButton,
+  .deleteButton {
+    width: 100%;
+    text-align: center;
+  }
+
+  .content {
+    padding: 1.5rem;
+  }
+
+  .infoItem {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+
+    .label {
+      min-width: auto;
+    }
+  }
+}

@@ -1,48 +1,45 @@
-.errorContainer {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  z-index: 1000;
-  animation: slideIn 0.3s ease-in-out;
-}
+@use 'sass:color';
 
-.errorContent {
-  background-color: #ff4444;
-  color: white;
-  padding: 15px 20px;
+.errorContainer {
+  background-color: #f8d7da;
+  color: #dc3545;
+  padding: 1rem;
   border-radius: 4px;
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
-  gap: 10px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  justify-content: space-between;
+  gap: 1rem;
 }
 
-.errorMessage {
+.message {
+  flex-grow: 1;
   margin: 0;
-  font-size: 14px;
 }
 
 .closeButton {
   background: none;
   border: none;
-  color: white;
-  font-size: 20px;
+  color: #dc3545;
   cursor: pointer;
-  padding: 0;
-  line-height: 1;
-  
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
+
   &:hover {
-    opacity: 0.8;
+    color: color.adjust(#dc3545, $lightness: -10%);
   }
 }
 
-@keyframes slideIn {
-  from {
-    transform: translateX(100%);
-    opacity: 0;
+@media (max-width: 768px) {
+  .errorContainer {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
   }
-  to {
-    transform: translateX(0);
-    opacity: 1;
+
+  .message {
+    font-size: 0.875rem;
   }
-} 
+}
