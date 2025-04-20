@@ -19,4 +19,4 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onClose }) 
       </div>
     </div>
   );
-}; 
+};

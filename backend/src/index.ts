@@ -6,6 +6,7 @@ import { sequelize } from '@config/db';
 import { syncModel as syncUserModel } from './models/User';
 import { syncModel as syncEventModel } from './models/Event';
 import { syncModel as syncBlacklistedTokenModel } from './models/BlacklistedToken';
+import { syncModel as syncEventParticipantModel } from './models/EventParticipant';
 import routes from './routes';
 import setupSwagger from './docs/swagger';
 import morgan from 'morgan';
@@ -38,6 +39,7 @@ const syncModels = async (): Promise<void> => {
   await syncUserModel();
   await syncEventModel();
   await syncBlacklistedTokenModel();
+  await syncEventParticipantModel();
 };
 syncModels()
   .then(() => {

@@ -8,11 +8,23 @@ const Header: React.FC = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = () => {
       const isAuth = authService.isAuthenticated();
       setIsAuthenticated(isAuth);
+      if (isAuth) {
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            setUserName(payload.name);
+          } catch (error) {
+            console.error('Error parsing token:', error);
+          }
+        }
+      }
     };
 
     checkAuth();
@@ -33,6 +45,7 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     authService.logout();
     setIsAuthenticated(false);
+    setUserName(null);
     navigate('/login');
   };
 
@@ -44,37 +57,29 @@ const Header: React.FC = () => {
     <header className={styles.header}>
       <div className={styles.container}>
         <Link to="/" className={styles.logo}>
-          События
+          Event Manager
         </Link>
 
-        <button
-          className={`${styles.burgerButton} ${isMenuOpen ? styles.active : ''}`}
-          onClick={toggleMenu}
-          aria-label="Открыть меню"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
+        <button className={styles.menuButton} onClick={toggleMenu}>
+          <span className={styles.menuIcon}></span>
         </button>
 
-        <nav className={`${styles.nav} ${isMenuOpen ? styles.open : ''}`}>
+        <nav className={`${styles.nav} ${isMenuOpen ? styles.navOpen : ''}`}>
           {isAuthenticated ? (
             <>
-              <Link
-                to="/"
-                className={`${styles.navLink} ${isActive('/') ? styles.active : ''}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Все события
+              <Link to="/" className={`${styles.navLink} ${isActive('/') ? styles.active : ''}`}>
+                Мероприятия
               </Link>
-              <Link
-                to="/events/create"
-                className={`${styles.navLink} ${isActive('/events/create') ? styles.active : ''}`}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                Создать событие
-              </Link>
-              <button className={styles.logoutButton} onClick={handleLogout}>
+              <div className={styles.userInfo}>
+                <Link
+                  to="/profile"
+                  className={`${styles.navLink} ${isActive('/profile') ? styles.active : ''}`}
+                >
+                  Профиль
+                </Link>
+                <span className={styles.userName}>{userName}</span>
+              </div>
+              <button onClick={handleLogout} className={styles.logoutButton}>
                 Выйти
               </button>
             </>
@@ -83,14 +88,12 @@ const Header: React.FC = () => {
               <Link
                 to="/login"
                 className={`${styles.navLink} ${isActive('/login') ? styles.active : ''}`}
-                onClick={() => setIsMenuOpen(false)}
               >
                 Войти
               </Link>
               <Link
                 to="/register"
                 className={`${styles.navLink} ${isActive('/register') ? styles.active : ''}`}
-                onClick={() => setIsMenuOpen(false)}
               >
                 Регистрация
               </Link>

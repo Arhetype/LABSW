@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { eventService, Event, EventCategory } from '../../api/eventService';
-import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
+import ErrorNotification from '../../components/ErrorNotification/ErrorNotification';
+import Loader from '../../components/Loader/Loader';
 import styles from './Events.module.scss';
+import { AxiosError } from 'axios';
 
 const Events: React.FC = () => {
   const navigate = useNavigate();
@@ -17,20 +19,12 @@ const Events: React.FC = () => {
       const data = await eventService.getEvents(category || undefined);
       setEvents(data);
       setError(null);
-    } catch (err: unknown) {
+    } catch (err) {
       console.error('Ошибка при загрузке событий:', err);
-      if (
-        err &&
-        typeof err === 'object' &&
-        'response' in err &&
-        err.response &&
-        typeof err.response === 'object' &&
-        'data' in err.response &&
-        err.response.data &&
-        typeof err.response.data === 'object' &&
-        'error' in err.response.data
-      ) {
-        setError(err.response.data.error as string);
+      if (err instanceof AxiosError && err.response && err.response.data) {
+        const errorCode = err.response.status;
+        const errorMessage = err.response.data.error || 'Неизвестная ошибка';
+        setError(`Код ошибки: ${errorCode}. ${errorMessage}`);
       } else {
         setError('Ошибка при загрузке событий. Пожалуйста, попробуйте снова.');
       }
@@ -72,7 +66,7 @@ const Events: React.FC = () => {
   };
 
   if (loading) {
-    return <div className={styles.loading}>Загрузка событий...</div>;
+    return <Loader />;
   }
 
   return (
@@ -111,7 +105,7 @@ const Events: React.FC = () => {
         </button>
       </div>
 
-      {error && <ErrorMessage message={error} onClose={() => setError(null)} />}
+      {error && <ErrorNotification message={error} onClose={() => setError(null)} />}
 
       {events.length === 0 ? (
         <div className={styles.noEvents}>Нет доступных событий</div>

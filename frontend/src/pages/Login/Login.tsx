@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { authService } from '../../api/authService';
+import { useAuth } from '../../context/AuthContext';
 import { ErrorMessage } from '../../components/ErrorMessage/ErrorMessage';
 import styles from './Login.module.scss';
 
@@ -11,6 +12,7 @@ interface LocationState {
 const Login: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { login } = useAuth();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
@@ -39,8 +41,8 @@ const Login: React.FC = () => {
 
     try {
       const response = await authService.login(formData);
-      localStorage.setItem('token', response.token);
-      navigate('/');
+      login(response.token);
+      navigate('/events');
     } catch {
       setError('Неверный email или пароль. Пожалуйста, попробуйте снова.');
     }

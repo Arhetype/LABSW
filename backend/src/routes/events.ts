@@ -1,6 +1,8 @@
 import express, { Request, Response } from 'express';
 import { Event } from '@models/Event';
 import { checkEventLimit } from '@middlewares/eventLimit';
+import { eventController } from '../controllers/eventController';
+import { authenticateToken } from '@middlewares/auth';
 
 const router = express.Router();
 
@@ -220,5 +222,96 @@ router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
     res.status(500).json({ error: 'Ошибка при удалении мероприятия' });
   }
 });
+
+/**
+ * @swagger
+ * /events/user/{userId}:
+ *   get:
+ *     summary: Получить мероприятия, созданные пользователем
+ *     tags: [Events]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID пользователя
+ *     responses:
+ *       200:
+ *         description: Список мероприятий
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Event'
+ *       404:
+ *         description: Мероприятия не найдены
+ */
+router.get(
+  '/user/:userId',
+  async (req: Request, res: Response): Promise<void> => {
+    const { userId } = req.params;
+    try {
+      const events = await Event.findAll({ where: { createdBy: userId } });
+      if (events.length === 0) {
+        res.status(404).json({ error: 'Мероприятия не найдены' });
+        return;
+      }
+      res.status(200).json(events);
+    } catch (error) {
+      console.error('Ошибка при получении мероприятий пользователя:', error);
+      res
+        .status(500)
+        .json({ error: 'Ошибка при получении мероприятий пользователя' });
+    }
+  },
+);
+
+/**
+ * @swagger
+ * /events/{id}/register:
+ *   post:
+ *     summary: Register for an event
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       201:
+ *         description: Successfully registered for the event
+ *       400:
+ *         description: Cannot register for own event or already registered
+ *       404:
+ *         description: Event not found
+ */
+router.post('/:id/register', authenticateToken, eventController.registerForEvent);
+
+/**
+ * @swagger
+ * /events/{id}/participants:
+ *   get:
+ *     summary: Get event participants
+ *     tags: [Events]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         required: true
+ *         schema:
+ *           type: integer
+ *     responses:
+ *       200:
+ *         description: List of event participants
+ *       404:
+ *         description: Event not found
+ */
+router.get('/:id/participants', authenticateToken, eventController.getEventParticipants);
 
 export default router;
