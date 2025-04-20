@@ -1,0 +1,45 @@
+@use 'sass:color';
+
+.successContainer {
+  background-color: #d4edda;
+  color: #155724;
+  padding: 1rem;
+  border-radius: 4px;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.message {
+  flex-grow: 1;
+  margin: 0;
+}
+
+.closeButton {
+  background: none;
+  border: none;
+  color: #155724;
+  cursor: pointer;
+  padding: 0.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.3s;
+
+  &:hover {
+    color: color.adjust(#155724, $lightness: -10%);
+  }
+}
+
+@media (max-width: 768px) {
+  .successContainer {
+    padding: 0.75rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .message {
+    font-size: 0.875rem;
+  }
+}

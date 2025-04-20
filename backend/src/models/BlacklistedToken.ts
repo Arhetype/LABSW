@@ -2,7 +2,7 @@ import { DataTypes, Model } from 'sequelize';
 import { sequelize } from '@config/db';
 
 interface BlacklistedTokenAttributes {
-  id: number;
+  id?: number;
   token: string;
   expiresAt: Date;
 }
