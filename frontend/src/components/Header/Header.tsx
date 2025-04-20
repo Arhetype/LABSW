@@ -8,11 +8,23 @@ const Header: React.FC = () => {
   const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [userName, setUserName] = useState<string | null>(null);
 
   useEffect(() => {
     const checkAuth = () => {
       const isAuth = authService.isAuthenticated();
       setIsAuthenticated(isAuth);
+      if (isAuth) {
+        const token = localStorage.getItem('token');
+        if (token) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1]));
+            setUserName(payload.name);
+          } catch (error) {
+            console.error('Error parsing token:', error);
+          }
+        }
+      }
     };
 
     checkAuth();
@@ -33,6 +45,7 @@ const Header: React.FC = () => {
   const handleLogout = () => {
     authService.logout();
     setIsAuthenticated(false);
+    setUserName(null);
     navigate('/login');
   };
 
@@ -57,12 +70,15 @@ const Header: React.FC = () => {
               <Link to="/" className={`${styles.navLink} ${isActive('/') ? styles.active : ''}`}>
                 Мероприятия
               </Link>
-              <Link
-                to="/profile"
-                className={`${styles.navLink} ${isActive('/profile') ? styles.active : ''}`}
-              >
-                Профиль
-              </Link>
+              <div className={styles.userInfo}>
+                <Link
+                  to="/profile"
+                  className={`${styles.navLink} ${isActive('/profile') ? styles.active : ''}`}
+                >
+                  Профиль
+                </Link>
+                <span className={styles.userName}>{userName}</span>
+              </div>
               <button onClick={handleLogout} className={styles.logoutButton}>
                 Выйти
               </button>

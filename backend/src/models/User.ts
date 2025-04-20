@@ -7,6 +7,8 @@ interface UserAttributes {
   name: string;
   email: string;
   password: string;
+  createdAt?: Date;
+  updatedAt?: Date;
 }
 
 class User extends Model<UserAttributes> implements UserAttributes {
@@ -14,7 +16,8 @@ class User extends Model<UserAttributes> implements UserAttributes {
   public name!: string;
   public email!: string;
   public password!: string;
-  public createdAt!: Date;
+  public readonly createdAt!: Date;
+  public readonly updatedAt!: Date;
 
   public async comparePassword(candidatePassword: string): Promise<boolean> {
     return await bcrypt.compare(candidatePassword, this.password);
@@ -62,7 +65,7 @@ User.init(
   {
     sequelize,
     tableName: 'users',
-    timestamps: false,
+    timestamps: true,
     hooks: {
       beforeCreate: async (user: User) => {
         if (user.password) {

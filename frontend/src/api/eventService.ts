@@ -1,75 +1,59 @@
 import { axiosInstance } from './axios';
-
-export type EventCategory = 'концерт' | 'лекция' | 'выставка';
-
-export interface Event {
-  id: number;
-  title: string;
-  description: string | null;
-  date: string;
-  category: EventCategory;
-  createdBy: number;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CreateEventData {
-  title: string;
-  description: string;
-  date: string;
-  category: EventCategory;
-  createdBy: number;
-}
-
-export type UpdateEventData = Partial<CreateEventData>;
-
-export interface User {
-  id: number;
-  name: string;
-  email: string;
-}
+import { Event, EventCategory } from '../types/event';
+import { User } from '../types/user';
+import { EventParticipant } from '../types/eventParticipant';
+import { AxiosError } from 'axios';
 
 export const eventService = {
-  async getEvents(category?: EventCategory): Promise<Event[]> {
-    const { data } = await axiosInstance.get<Event[]>('/events', {
+  getEvents: async (category?: EventCategory): Promise<Event[]> => {
+    const response = await axiosInstance.get('/events', {
       params: { category },
     });
-    return data;
+    return response.data;
   },
 
-  async getEventById(id: number): Promise<Event> {
-    const { data } = await axiosInstance.get<Event>(`/events/${id}`);
-    return data;
+  getEventById: async (id: number): Promise<Event> => {
+    const response = await axiosInstance.get(`/events/${id}`);
+    return response.data;
   },
 
-  async createEvent(eventData: CreateEventData): Promise<Event> {
-    const { data } = await axiosInstance.post<Event>('/events', eventData);
-    return data;
+  createEvent: async (eventData: Omit<Event, 'id' | 'createdAt' | 'updatedAt'>): Promise<Event> => {
+    const response = await axiosInstance.post('/events', eventData);
+    return response.data;
   },
 
-  async updateEvent(id: number, eventData: UpdateEventData): Promise<Event> {
-    const { data } = await axiosInstance.put<Event>(`/events/${id}`, eventData);
-    return data;
+  updateEvent: async (id: number, eventData: Partial<Event>): Promise<Event> => {
+    const response = await axiosInstance.put(`/events/${id}`, eventData);
+    return response.data;
   },
 
-  async deleteEvent(id: number): Promise<void> {
+  deleteEvent: async (id: number): Promise<void> => {
     await axiosInstance.delete(`/events/${id}`);
   },
 
-  async getUserEvents(userId: number): Promise<Event[]> {
-    const { data } = await axiosInstance.get<Event[]>(`/events/user/${userId}`);
-    return data;
+  registerForEvent: async (eventId: number): Promise<void> => {
+    try {
+      await axiosInstance.post(`/events/${eventId}/register`);
+    } catch (error) {
+      if (error instanceof AxiosError && error.response?.data?.message) {
+        throw new Error(error.response.data.message);
+      }
+      throw new Error('Ошибка при регистрации на мероприятие');
+    }
   },
 
-  async getPublicEvents(category?: EventCategory): Promise<Event[]> {
-    const { data } = await axiosInstance.get<Event[]>('/events/public', {
-      params: { category },
-    });
-    return data;
+  getEventParticipants: async (eventId: number): Promise<EventParticipant[]> => {
+    const response = await axiosInstance.get(`/events/${eventId}/participants`);
+    return response.data;
   },
 
-  async getUserById(userId: number): Promise<User> {
-    const { data } = await axiosInstance.get<User>(`/users/${userId}`);
-    return data;
+  getUserById: async (userId: number): Promise<User> => {
+    const response = await axiosInstance.get(`/users/${userId}`);
+    return response.data;
   },
+
+  getUserEvents: async (userId: number): Promise<Event[]> => {
+    const response = await axiosInstance.get(`/events/user/${userId}`);
+    return response.data;
+  }
 };

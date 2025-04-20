@@ -4,11 +4,11 @@ import { User } from '@models/User';
 
 dotenv.config();
 
-interface UserPayload {
-  exp: number;
+export interface UserPayload {
   id: number;
-  name: string;
+  username: string;
   email: string;
+  exp: number;
 }
 
 const generateToken = (user: User): string => {
