@@ -1,18 +1,18 @@
 import React from 'react';
-import styles from './ErrorMessage.module.scss';
+import styles from './ErrorNotification.module.scss';
 
-interface ErrorMessageProps {
+interface ErrorNotificationProps {
   message: string;
   onClose?: () => void;
 }
 
-export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onClose }) => {
+const ErrorNotification: React.FC<ErrorNotificationProps> = ({ message, onClose }) => {
   return (
     <div className={styles.errorContainer}>
       <div className={styles.errorContent}>
         <p className={styles.errorMessage}>{message}</p>
         {onClose && (
-          <button className={styles.closeButton} onClick={onClose}>
+          <button onClick={onClose} className={styles.closeButton}>
             ×
           </button>
         )}
@@ -20,3 +20,5 @@ export const ErrorMessage: React.FC<ErrorMessageProps> = ({ message, onClose }) 
     </div>
   );
 };
+
+export default ErrorNotification;

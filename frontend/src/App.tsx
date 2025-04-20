@@ -7,6 +7,8 @@ import Register from './pages/Register/Register';
 import Events from './pages/Events/Events';
 import CreateEvent from './pages/CreateEvent/CreateEvent';
 import EventDetails from './pages/EventDetails/EventDetails';
+import EditEvent from './pages/EditEvent/EditEvent';
+import Profile from './pages/Profile/Profile';
 import NotFound from './pages/NotFound/NotFound';
 import './App.scss';
 
@@ -33,7 +35,14 @@ const App: React.FC = () => {
               path="/events/:id"
               element={isAuthenticated ? <EventDetails /> : <Navigate to="/login" />}
             />
-            <Route path="/events/:id/edit" element={<NotFound />} />
+            <Route
+              path="/events/:id/edit"
+              element={isAuthenticated ? <EditEvent /> : <Navigate to="/login" />}
+            />
+            <Route
+              path="/profile"
+              element={isAuthenticated ? <Profile /> : <Navigate to="/login" />}
+            />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

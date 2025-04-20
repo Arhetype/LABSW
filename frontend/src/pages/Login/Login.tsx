@@ -40,7 +40,7 @@ const Login: React.FC = () => {
     try {
       const response = await authService.login(formData);
       localStorage.setItem('token', response.token);
-      navigate('/');
+      window.location.href = '/';
     } catch {
       setError('Неверный email или пароль. Пожалуйста, попробуйте снова.');
     }

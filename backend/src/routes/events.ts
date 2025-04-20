@@ -221,4 +221,49 @@ router.delete('/:id', async (req: Request, res: Response): Promise<void> => {
   }
 });
 
+/**
+ * @swagger
+ * /events/user/{userId}:
+ *   get:
+ *     summary: Получить мероприятия, созданные пользователем
+ *     tags: [Events]
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         required: true
+ *         schema:
+ *           type: integer
+ *         description: ID пользователя
+ *     responses:
+ *       200:
+ *         description: Список мероприятий
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Event'
+ *       404:
+ *         description: Мероприятия не найдены
+ */
+router.get(
+  '/user/:userId',
+  async (req: Request, res: Response): Promise<void> => {
+    const { userId } = req.params;
+    try {
+      const events = await Event.findAll({ where: { createdBy: userId } });
+      if (events.length === 0) {
+        res.status(404).json({ error: 'Мероприятия не найдены' });
+        return;
+      }
+      res.status(200).json(events);
+    } catch (error) {
+      console.error('Ошибка при получении мероприятий пользователя:', error);
+      res
+        .status(500)
+        .json({ error: 'Ошибка при получении мероприятий пользователя' });
+    }
+  },
+);
+
 export default router;

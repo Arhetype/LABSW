@@ -23,6 +23,12 @@ export interface CreateEventData {
 
 export type UpdateEventData = Partial<CreateEventData>;
 
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
 export const eventService = {
   async getEvents(category?: EventCategory): Promise<Event[]> {
     const { data } = await axiosInstance.get<Event[]>('/events', {
@@ -50,10 +56,20 @@ export const eventService = {
     await axiosInstance.delete(`/events/${id}`);
   },
 
+  async getUserEvents(userId: number): Promise<Event[]> {
+    const { data } = await axiosInstance.get<Event[]>(`/events/user/${userId}`);
+    return data;
+  },
+
   async getPublicEvents(category?: EventCategory): Promise<Event[]> {
-    const { data } = await axiosInstance.get<Event[]>('/public/events', {
+    const { data } = await axiosInstance.get<Event[]>('/events/public', {
       params: { category },
     });
+    return data;
+  },
+
+  async getUserById(userId: number): Promise<User> {
+    const { data } = await axiosInstance.get<User>(`/users/${userId}`);
     return data;
   },
 };

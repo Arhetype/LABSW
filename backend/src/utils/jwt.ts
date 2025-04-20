@@ -7,12 +7,18 @@ dotenv.config();
 interface UserPayload {
   exp: number;
   id: number;
+  name: string;
+  email: string;
 }
 
 const generateToken = (user: User): string => {
-  return jwt.sign({ id: user.id }, process.env.JWT_SECRET as string, {
-    expiresIn: '1h',
-  });
+  return jwt.sign(
+    { id: user.id, name: user.name, email: user.email },
+    process.env.JWT_SECRET as string,
+    {
+      expiresIn: '1h',
+    },
+  );
 };
 
 const verifyToken = (token: string): UserPayload | null => {
